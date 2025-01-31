@@ -1,14 +1,9 @@
 package xyz.megadodo.magicsquare;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import com.google.gson.Gson;
 
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.athena.AthenaClient;
@@ -32,12 +27,12 @@ public class StreamingApplication {
 
     public static void main(String[] args) 
     {
-        // final Partition pObject = new Partition();
-        // pObject.getPartionsForSquare(65, 5).forEach(p -> {
-        //     Record firehoseRecord = Record.builder().data(SdkBytes.fromString("{\"row\": " + p.toString() + ", \"repValue\": " + pObject.getRepresentativeValue(p) + "}\n", StandardCharsets.UTF_8)).build();        
-        //     PutRecordRequest request = PutRecordRequest.builder().deliveryStreamName("partition-delivery-stream").record(firehoseRecord).build();
-        //     getFirehoseClient().putRecord(request);
-        // });
+        final Partition pObject = new Partition();
+        pObject.getPartionsForSquare(65, 5).forEach(p -> {
+            Record firehoseRecord = Record.builder().data(SdkBytes.fromString("{\"row\": " + p.toString() + ", \"repValue\": " + pObject.getRepresentativeValue(p) + "}\n", StandardCharsets.UTF_8)).build();        
+            PutRecordRequest request = PutRecordRequest.builder().deliveryStreamName("partition-delivery-stream").record(firehoseRecord).build();
+            getFirehoseClient().putRecord(request);
+        });
 
         QueryExecutionContext queryExecutionContext = QueryExecutionContext.builder().database("magic_squares").build();
         try {
