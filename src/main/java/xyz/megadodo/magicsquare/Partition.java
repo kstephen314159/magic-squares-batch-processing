@@ -6,18 +6,23 @@ import java.util.List;
 
 public class Partition {
 
-    private long [] numberBitmaps = new long[26];
+    private int squareOrder;
+    private int magicSum;
+    private long [] numberBitmaps;
     Hashtable<List<Integer>, Long> partitionRepresentativeValues = new Hashtable<List<Integer>, Long>();
 
-    public Partition()
+    public Partition(int magicSQuareOrder)
     {
+        this.squareOrder = magicSQuareOrder;
+        numberBitmaps = new long[magicSQuareOrder * magicSQuareOrder + 1];
+        magicSum = magicSQuareOrder * (magicSQuareOrder * magicSQuareOrder + 1) / 2;
         numberBitmaps[0] = 0;
         numberBitmaps[1] = 1;
-        for(int i = 2; i < 26; i++)
+        for(int i = 2; i < numberBitmaps.length; i++)
             numberBitmaps[i] = numberBitmaps[i - 1] << 1;
     }
 
-    public List<List<Integer>> getPartionsForSquare(int sum, int numTerms){
+    public List<List<Integer>> getPartionsForSquare(){
 
         /*
          *  The number of distinct partitions of "sum" with exactly "numTerms" terms where the
@@ -27,13 +32,13 @@ public class Partition {
          *  we will never find a partition with the right sum once we hit the value (1 + 2 +
          *  ... + (numTerms - 1). This is equal to numTerms * (numTerms - 1) / 2
          */
-        int minBound = numTerms * (numTerms - 1) / 2;
-        int largestTerm = numTerms * numTerms;
+        int minBound = squareOrder * (squareOrder - 1) / 2;
+        int largestTerm = squareOrder * squareOrder;
 
         List<List<Integer>> result = new ArrayList<List<Integer>>();
         for(int outerMost = largestTerm; outerMost > minBound; outerMost--){
             final int firstTerm = outerMost;
-            getPartitions(sum - outerMost, numTerms - 1, outerMost - 1).forEach(partition -> {
+            getPartitions(magicSum - outerMost, squareOrder - 1, outerMost - 1).forEach(partition -> {
                 partition.add(0, firstTerm);
                 long representativeValue = 0;
                 for(int i = 0; i < partition.size(); i++)
@@ -73,7 +78,7 @@ public class Partition {
             if(2 * maxBound - 1 < sum)
                 return result;
 
-                for(int i = maxBound; i > 1; i--)
+            for(int i = maxBound; i > 1; i--)
                 for(int j = i - 1; j > 0; j--){
                     if(i + j == sum){
                         List<Integer> partition = new ArrayList<Integer>();
@@ -88,6 +93,8 @@ public class Partition {
 
             for(int outerMost = largestTerm; outerMost >= minBound; outerMost--){
                 final int firstTerm = outerMost;
+                if(sum < outerMost)
+                    continue;
                 getPartitions(sum - outerMost, numTerms - 1, outerMost - 1).forEach(partition -> {
                     partition.add(0, firstTerm);
                     result.add(partition);

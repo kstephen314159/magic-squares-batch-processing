@@ -6,8 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.gson.Gson;
-
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -31,9 +29,9 @@ public class NoStreamingApplication {
         try {
             File tempFile = File.createTempFile("all-partitions", "json");
             BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile));
-            final Partition pObject = new Partition();
+            final Partition pObject = new Partition(5);
             AtomicInteger counter = new AtomicInteger();
-            pObject.getPartionsForSquare(65, 5).forEach(p -> {
+            pObject.getPartionsForSquare().forEach(p -> {
                 try {
                     bw.append("{\"id\": " + counter.incrementAndGet() + ", \"partition\": " + p.toString() + ", \"repValue\": " + pObject.getRepresentativeValue(p) + "}\n");
                 } catch (IOException e) {

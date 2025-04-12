@@ -1,0 +1,5 @@
+[
+    "src/main/sql/m5/level2.sql",
+    "src/main/sql/m5/level3.sql",
+    "src/main/sql/m5/candidate-rowsets.sql"
+]

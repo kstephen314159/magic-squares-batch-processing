@@ -27,45 +27,46 @@ public class StreamingApplication {
 
     public static void main(String[] args) 
     {
-        final Partition pObject = new Partition();
-        pObject.getPartionsForSquare(65, 5).forEach(p -> {
-            Record firehoseRecord = Record.builder().data(SdkBytes.fromString("{\"row\": " + p.toString() + ", \"repValue\": " + pObject.getRepresentativeValue(p) + "}\n", StandardCharsets.UTF_8)).build();        
-            PutRecordRequest request = PutRecordRequest.builder().deliveryStreamName("partition-delivery-stream").record(firehoseRecord).build();
-            getFirehoseClient().putRecord(request);
+        final Partition pObject = new Partition(4);
+        pObject.getPartionsForSquare().forEach(p -> {
+            // Record firehoseRecord = Record.builder().data(SdkBytes.fromString("{\"row\": " + p.toString() + ", \"repValue\": " + pObject.getRepresentativeValue(p) + "}\n", StandardCharsets.UTF_8)).build();        
+            // PutRecordRequest request = PutRecordRequest.builder().deliveryStreamName("partition-delivery-stream").record(firehoseRecord).build();
+            // getFirehoseClient().putRecord(request);
+            System.out.println(p);
         });
 
-        QueryExecutionContext queryExecutionContext = QueryExecutionContext.builder().database("magic_squares").build();
-        try {
-            String content = Files.readString(Path.of("src/main/sql/level2.sql"));
-            ResultConfiguration resultConfiguration = ResultConfiguration.builder().outputLocation("s3://stash.megadodo.umb/magic-square-query-results/").build();
-            StartQueryExecutionRequest startQueryExecutionRequest = StartQueryExecutionRequest.builder()
-                .queryString(content).queryExecutionContext(queryExecutionContext).resultConfiguration(resultConfiguration).build();
-            AthenaClient athenaClient = AthenaClient.builder().build();
-            StartQueryExecutionResponse startQueryExecutionResponse = athenaClient.startQueryExecution(startQueryExecutionRequest);
-            String queryExecutionId = startQueryExecutionResponse.queryExecutionId();
-            waitForQueryToComplete(athenaClient, queryExecutionId);
+        // QueryExecutionContext queryExecutionContext = QueryExecutionContext.builder().database("magic_squares").build();
+        // try {
+        //     String content = Files.readString(Path.of("src/main/sql/level2.sql"));
+        //     ResultConfiguration resultConfiguration = ResultConfiguration.builder().outputLocation("s3://stash.megadodo.umb/magic-square-query-results/").build();
+        //     StartQueryExecutionRequest startQueryExecutionRequest = StartQueryExecutionRequest.builder()
+        //         .queryString(content).queryExecutionContext(queryExecutionContext).resultConfiguration(resultConfiguration).build();
+        //     AthenaClient athenaClient = AthenaClient.builder().build();
+        //     StartQueryExecutionResponse startQueryExecutionResponse = athenaClient.startQueryExecution(startQueryExecutionRequest);
+        //     String queryExecutionId = startQueryExecutionResponse.queryExecutionId();
+        //     waitForQueryToComplete(athenaClient, queryExecutionId);
 
-            content = Files.readString(Path.of("src/main/sql/level3.sql"));
-            startQueryExecutionRequest = StartQueryExecutionRequest.builder()
-                .queryString(content).queryExecutionContext(queryExecutionContext).resultConfiguration(resultConfiguration).build();
-            startQueryExecutionResponse = athenaClient.startQueryExecution(startQueryExecutionRequest);
-            queryExecutionId = startQueryExecutionResponse.queryExecutionId();
-            waitForQueryToComplete(athenaClient, queryExecutionId);
+        //     content = Files.readString(Path.of("src/main/sql/level3.sql"));
+        //     startQueryExecutionRequest = StartQueryExecutionRequest.builder()
+        //         .queryString(content).queryExecutionContext(queryExecutionContext).resultConfiguration(resultConfiguration).build();
+        //     startQueryExecutionResponse = athenaClient.startQueryExecution(startQueryExecutionRequest);
+        //     queryExecutionId = startQueryExecutionResponse.queryExecutionId();
+        //     waitForQueryToComplete(athenaClient, queryExecutionId);
 
-            content = Files.readString(Path.of("src/main/sql/candidate-rowsets.sql"));
-            startQueryExecutionRequest = StartQueryExecutionRequest.builder()
-                .queryString(content).queryExecutionContext(queryExecutionContext).resultConfiguration(resultConfiguration).build();
-            startQueryExecutionResponse = athenaClient.startQueryExecution(startQueryExecutionRequest);
-            queryExecutionId = startQueryExecutionResponse.queryExecutionId();
-            waitForQueryToComplete(athenaClient, queryExecutionId);
+        //     content = Files.readString(Path.of("src/main/sql/candidate-rowsets.sql"));
+        //     startQueryExecutionRequest = StartQueryExecutionRequest.builder()
+        //         .queryString(content).queryExecutionContext(queryExecutionContext).resultConfiguration(resultConfiguration).build();
+        //     startQueryExecutionResponse = athenaClient.startQueryExecution(startQueryExecutionRequest);
+        //     queryExecutionId = startQueryExecutionResponse.queryExecutionId();
+        //     waitForQueryToComplete(athenaClient, queryExecutionId);
 
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        // } catch (IOException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // } catch (InterruptedException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // }
     }
 
     private static void waitForQueryToComplete(AthenaClient athenaClient, String queryExecutionId)

@@ -1,0 +1,7 @@
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:17.0.14-al2-native-headless
+
+USER root
+
+COPY target/batch-processing-1.0-SNAPSHOT.jar /root/target/
+
+CMD java -jar /root/target/batch-processing-1.0-SNAPSHOT.jar

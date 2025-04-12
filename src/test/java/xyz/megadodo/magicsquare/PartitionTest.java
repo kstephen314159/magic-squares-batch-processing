@@ -39,8 +39,8 @@ public class PartitionTest {
         for(int [] p: expectedPartitions)
             expectedPartitionList.add(Arrays.stream(p).boxed().toList());
 
-        Partition pList = new Partition();
-        List<List<Integer>> result = pList.getPartionsForSquare(15, 3);
+        Partition pList = new Partition(3);
+        List<List<Integer>> result = pList.getPartionsForSquare();
         assertEquals(expectedPartitionList.size(), result.size());
         result.forEach(p -> {
             assertTrue(expectedPartitionList.contains(p));
@@ -55,7 +55,7 @@ public class PartitionTest {
             String content = Files.readString(Path.of("src/test/data/partition-test-46-4-40.json"));
             Type listType = new TypeToken<ArrayList<List<Integer>>>(){}.getType();
             List<List<Integer>> expectedResult = (new Gson()).fromJson(content, listType);
-            Partition pList = new Partition();
+            Partition pList = new Partition(6);
             try {
                 List<List<Integer>> results = ((List<List<Integer>>)MethodUtils.invokeMethod(pList, true, "getPartitions", 46, 4, 40));
                 assertEquals(expectedResult.size(), results.size());
