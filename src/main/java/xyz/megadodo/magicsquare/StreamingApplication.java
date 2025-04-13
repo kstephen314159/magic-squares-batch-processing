@@ -29,10 +29,9 @@ public class StreamingApplication {
     {
         final Partition pObject = new Partition(4);
         pObject.getPartionsForSquare().forEach(p -> {
-            // Record firehoseRecord = Record.builder().data(SdkBytes.fromString("{\"row\": " + p.toString() + ", \"repValue\": " + pObject.getRepresentativeValue(p) + "}\n", StandardCharsets.UTF_8)).build();        
-            // PutRecordRequest request = PutRecordRequest.builder().deliveryStreamName("partition-delivery-stream").record(firehoseRecord).build();
-            // getFirehoseClient().putRecord(request);
-            System.out.println(p);
+            Record firehoseRecord = Record.builder().data(SdkBytes.fromString("{\"row\": " + p.toString() + ", \"repValue\": " + pObject.getRepresentativeValue(p) + "}\n", StandardCharsets.UTF_8)).build();        
+            PutRecordRequest request = PutRecordRequest.builder().deliveryStreamName("magic-square-stream").record(firehoseRecord).build();
+            getFirehoseClient().putRecord(request);
         });
 
         // QueryExecutionContext queryExecutionContext = QueryExecutionContext.builder().database("magic_squares").build();
