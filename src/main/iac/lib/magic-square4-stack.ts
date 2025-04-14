@@ -16,8 +16,13 @@ export class MagicSquare4Stack extends cdk.Stack {
     // });
 
     const m4Bucket = new s3.Bucket(this, 'm4.squares.megadodo.umb', {
-      bucketName: "m4.squares.megadodo.umb",
       autoDeleteObjects: true,
+      bucketName: "m4.squares.megadodo.umb",
+      lifecycleRules: [
+        {
+          expiration: cdk.Duration.days(3)
+        }
+      ],
       removalPolicy: cdk.RemovalPolicy.DESTROY
     });
     new firehose.DeliveryStream(this, 'magic-square-stream', {
