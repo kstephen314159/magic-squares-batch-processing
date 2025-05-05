@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+import * as logs from 'aws-cdk-lib/aws-logs';
 
 export class MagicSquare4Stack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -25,9 +26,20 @@ export class MagicSquare4Stack extends cdk.Stack {
       ],
       removalPolicy: cdk.RemovalPolicy.DESTROY
     });
-    new firehose.DeliveryStream(this, 'magic-square-stream', {
-      deliveryStreamName: "magic-square-stream",
-      destination: new firehose.S3Bucket(m4Bucket)
+
+    const logGroup = new logs.LogGroup(this, 'firehose log group', {
+      logGroupName: "umb/megadodo/magic_square/m4",
+      removalPolicy: cdk.RemovalPolicy.DESTROY
     });
+
+    const magicSquareDeliveryStream = new firehose.DeliveryStream(this, 'magic-square-stream', {
+      deliveryStreamName: "magic-square-stream",
+      destination: new firehose.S3Bucket(m4Bucket, {
+        bufferingInterval: cdk.Duration.seconds(0),
+        bufferingSize: cdk.Size.mebibytes(100),
+        loggingConfig: new firehose.EnableLogging(logGroup)
+      })
+    });
+
   }
 }
