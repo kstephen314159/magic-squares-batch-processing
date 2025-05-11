@@ -126,33 +126,44 @@ public class StreamingApplication {
                response = cwc.listMetrics(request);
             }
             GetMetricStatisticsRequest metricStatisticsRequest = GetMetricStatisticsRequest.builder()
-                .startTime(Instant.now().minus(Duration.ofMinutes(5)))
-                .endTime(Instant.now().plus(Duration.ofMinutes(15)))
+                .startTime(Instant.now().minus(Duration.ofMinutes(1)))
+                .endTime(Instant.now().plus(Duration.ofMinutes(5)))
                 .dimensions(Dimension.builder().name("DeliveryStreamName").value("magic-square-stream").build())
                 .metricName("DeliveryToS3.Records")
                 .namespace("AWS/Firehose")
-                .period(900)
+                .period(1)
                 .statistics(Statistic.fromValue("SampleCount"))
                 .build();
-            CompletableFuture<GetMetricStatisticsResponse> future = getAsyncClient().getMetricStatistics(metricStatisticsRequest)
-                .whenComplete((metricsResponse, exception) -> {
-                    if (metricsResponse != null) {
-                        List<Datapoint> data = metricsResponse.datapoints();
-                        if (!data.isEmpty()) {
-                            for (Datapoint datapoint : data) {
-                                System.out.println("Timestamp: " + datapoint.timestamp() + " Maximum value: " + datapoint.sampleCount());
+            for(int i = 0; i < 5; i++){
+                CompletableFuture<GetMetricStatisticsResponse> future = getAsyncClient().getMetricStatistics(metricStatisticsRequest)
+                    .whenComplete((metricsResponse, exception) -> {
+                        if (metricsResponse != null) {
+                            List<Datapoint> data = metricsResponse.datapoints();
+                            if (!data.isEmpty()) {
+                                for (Datapoint datapoint : data) {
+                                    System.out.println("Timestamp: " + datapoint.timestamp() + " Maximum value: " + datapoint.maximum() + " - " + datapoint.sum() + " - " + datapoint.sampleCount() + " - " + datapoint.hasExtendedStatistics());
+                                    datapoint.sdkFields().forEach(field -> {
+                                        System.out.println("field = " + field.memberName());
+                                    });
+                                }
+                            } else {
+                                System.out.println("The returned data list is empty");
                             }
                         } else {
-                            System.out.println("The returned data list is empty");
+                            System.out.println("Failed to get metric statistics:" +  exception.getMessage());
                         }
-                    } else {
-                        System.out.println("Failed to get metric statistics:" +  exception.getMessage());
-                    }
-                })
-                .exceptionally(exception -> {
-                    throw new RuntimeException("Error while getting metric statistics: " + exception.getMessage(), exception);
-                });
-            future.join();
+                    })
+                    .exceptionally(exception -> {
+                        throw new RuntimeException("Error while getting metric statistics: " + exception.getMessage(), exception);
+                    });
+                future.join();
+                try {
+                    Thread.sleep(60000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
     // for (Metric metric : response.metrics()) {
     //             System.out.printf(
     //                     "Retrieved metric %s - %s\n", metric.metricName(), metric.toString());

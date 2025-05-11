@@ -26,6 +26,16 @@ export class MagicSquare4Stack extends cdk.Stack {
       ],
       removalPolicy: cdk.RemovalPolicy.DESTROY
     });
+    const m4BackupBucket = new s3.Bucket(this, 'm4b.squares.megadodo.umb', {
+      autoDeleteObjects: true,
+      bucketName: "m4b.squares.megadodo.umb",
+      lifecycleRules: [
+        {
+          expiration: cdk.Duration.days(3)
+        }
+      ],
+      removalPolicy: cdk.RemovalPolicy.DESTROY
+    });
 
     const logGroup = new logs.LogGroup(this, 'firehose log group', {
       logGroupName: "umb/megadodo/magic_square/m4",
@@ -36,8 +46,12 @@ export class MagicSquare4Stack extends cdk.Stack {
       deliveryStreamName: "magic-square-stream",
       destination: new firehose.S3Bucket(m4Bucket, {
         bufferingInterval: cdk.Duration.seconds(0),
-        bufferingSize: cdk.Size.mebibytes(100),
-        loggingConfig: new firehose.EnableLogging(logGroup)
+        compression: firehose.Compression.SNAPPY,
+        loggingConfig: new firehose.EnableLogging(logGroup),
+        s3Backup: {
+          mode: firehose.BackupMode.ALL,
+          bucket: m4BackupBucket
+        }
       })
     });
 
