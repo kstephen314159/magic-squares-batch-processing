@@ -1,6 +1,6 @@
 CREATE TABLE "magic_squares"."no_match_mapping_l2" WITH (
   format = 'parquet',
-  external_location = 's3://stash.megadodo.umb/magic-squares/m4/l2/',
+  external_location = 's3://m4.squares.megadodo.umb/l2/',
   write_compression = 'SNAPPY'
 ) AS with nomatch_mapping(row1, repValues, row2, noMatchRepValue) as (
   SELECT distinct 

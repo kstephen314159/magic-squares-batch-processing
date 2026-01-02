@@ -18,3 +18,18 @@ Before we go further, we need to define two terms: the up-diagonal and the down-
 
 One can line up the down diagonal simply by finding a suitable permutation of the columns of the square. To line up the up diagonal, one can use permutations of rows and columns together. If you swap the position of columns x and y,
 make the same swap for rows x and y. If you do this, there are known starting positions of the up diagonal which can be transformed to the right locations.
+
+## Running the Application
+
+To build and run the StreamingApplication:
+
+```bash
+mvn clean package
+java -cp target/batch-processing-1.0-SNAPSHOT.jar xyz.megadodo.magicsquare.StreamingApplication 4
+```
+
+Replace `4` with `5` to run for magic squares of order 5.
+
+Make sure you have:
+- AWS credentials configured (via `~/.aws/credentials` or environment variables)
+- The necessary AWS permissions for Firehose and Athena

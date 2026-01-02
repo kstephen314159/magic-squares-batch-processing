@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS magic_squares.no_match_mapping_l2;

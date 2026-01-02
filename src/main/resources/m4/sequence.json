@@ -1,4 +1,23 @@
-[
-    "src/main/sql/m4/level2.sql",
-    "src/main/sql/m4/candidate-rowsets.sql"
-]
+{
+    "create_statements": [
+        "src/main/sql/m4/create-partitions.sql",
+        "src/main/sql/m4/level2.sql",
+        "src/main/sql/m4/candidate-rowsets.sql",
+        "src/main/sql/m4/candidate-row-and-cols.sql",
+        "src/main/sql/m4/candidate-row-col-and-diag.sql"
+    ],
+    "delete_statements": [
+        "src/main/sql/m4/delete_create-partitions.sql",
+        "src/main/sql/m4/delete_level2.sql",
+        "src/main/sql/m4/delete_candidate-rowsets.sql",
+        "src/main/sql/m4/delete_candidate-row-and-cols.sql",
+        "src/main/sql/m4/delete_candidate-row-col-and-diag.sql"
+    ],
+    "delete_paths": [
+        "",
+        "s3://m4.squares.megadodo.umb/l2/",
+        "s3://m4.squares.megadodo.umb/candidate-rows/",
+        "s3://m4.squares.megadodo.umb/candidate-rows-and-columns/",
+        "s3://m4.squares.megadodo.umb/candidate-rows-columns-and-diagonal/"
+    ]
+}

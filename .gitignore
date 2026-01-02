@@ -1,2 +1,6 @@
 target/
 .vscode/
+src/iac/iac-terraform/.terraform
+src/iac/iac-terraform/.terraform.lock.hcl
+src/iac/iac-terraform/terraform.tfstate
+src/iac/iac-terraform/terraform.tfstate.backup

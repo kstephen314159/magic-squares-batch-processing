@@ -4,31 +4,15 @@ import { Construct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import * as iamrole from 'aws-cdk-lib/aws-iam';
 
 export class MagicSquare4Stack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
-
-    // example resource
-    // const queue = new sqs.Queue(this, 'IacQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
-
     const m4Bucket = new s3.Bucket(this, 'm4.squares.megadodo.umb', {
       autoDeleteObjects: true,
       bucketName: "m4.squares.megadodo.umb",
-      lifecycleRules: [
-        {
-          expiration: cdk.Duration.days(3)
-        }
-      ],
-      removalPolicy: cdk.RemovalPolicy.DESTROY
-    });
-    const m4BackupBucket = new s3.Bucket(this, 'm4b.squares.megadodo.umb', {
-      autoDeleteObjects: true,
-      bucketName: "m4b.squares.megadodo.umb",
       lifecycleRules: [
         {
           expiration: cdk.Duration.days(3)
@@ -48,12 +32,33 @@ export class MagicSquare4Stack extends cdk.Stack {
         bufferingInterval: cdk.Duration.seconds(0),
         compression: firehose.Compression.SNAPPY,
         loggingConfig: new firehose.EnableLogging(logGroup),
-        s3Backup: {
-          mode: firehose.BackupMode.ALL,
-          bucket: m4BackupBucket
-        }
       })
     });
 
+    const s3DestRole = new iamrole.Role(this, 's3DestinationRole', {
+      assumedBy: new iamrole.ServicePrincipal('firehose.amazonaws.com')
+      
+    });
+    s3DestRole.addToPolicy(new iamrole.PolicyStatement({
+      actions: ['sts:AssumeRole']
+    }))
+
+    const extendedS3DestinationConfigurationProperty: firehose.CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty = {
+      bucketArn: m4Bucket.bucketArn,
+      dataFormatConversionConfiguration : {
+        enabled: true,
+        outputFormatConfiguration: {
+          serializer: {
+            parquetSerDe: {
+              blockSizeBytes: 128,
+              compression: 'SNAPPY'
+            }
+          }
+        }
+      },
+      roleArn: s3DestRole.roleArn
+    };
+    const cfnDeliveryStream = magicSquareDeliveryStream.node.findChild("CfnDeliveryStream") as firehose.CfnDeliveryStream;
+    cfnDeliveryStream.addMetadata("ExtendedS3DestinationConfiguration", extendedS3DestinationConfigurationProperty);
   }
 }

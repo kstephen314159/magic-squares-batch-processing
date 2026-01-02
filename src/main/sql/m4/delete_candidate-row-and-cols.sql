@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS magic_squares.candidate_rows_and_columns;

@@ -1,5 +1,20 @@
-[
-    "src/main/sql/m5/level2.sql",
-    "src/main/sql/m5/level3.sql",
-    "src/main/sql/m5/candidate-rowsets.sql"
-]
+{
+    "create_statements": [
+        "src/main/sql/m5/create-partitions.sql",
+        "src/main/sql/m5/level2.sql",
+        "src/main/sql/m5/level3.sql",
+        "src/main/sql/m5/candidate-rowsets.sql"
+    ],
+    "delete_statements": [
+        "src/main/sql/m5/delete_create-partitions.sql",
+        "src/main/sql/m5/delete_level2.sql",
+        "src/main/sql/m5/delete_level3.sql",
+        "src/main/sql/m5/delete_candidate-rowsets.sql"
+    ],
+    "delete_paths": [
+        "",
+        "s3://stash.megadodo.umb/magic-squares/l2/",
+        "s3://stash.megadodo.umb/magic-squares/l3/",
+        "s3://stash.megadodo.umb/magic-squares/candidate-rows/"
+    ]
+}
